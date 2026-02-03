@@ -1,0 +1,4 @@
+interface:
+  display_name: "Arcium Dev"
+  short_description: "Arcium circuits, programs, and client flows"
+  default_prompt: "Use $arcium-dev to build a minimal Arcis circuit, Rust program integration, and TS test harness."
