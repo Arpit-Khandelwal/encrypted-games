@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Secret Combo Demo</title>
+    <style>
+      :root {
+        --bg: #f2f4f8;
+        --bg-accent: #e7ecf4;
+        --surface: #ffffff;
+        --surface-2: #f8f9fb;
+        --text: #1a1f2b;
+        --muted: #6c7587;
+        --border: #e2e7f0;
+        --accent: #ff7d3a;
+        --accent-dark: #db5f21;
+        --green: #2ea66a;
+        --yellow: #d4a537;
+        --red: #d5574f;
+        --shadow: 0 18px 60px rgba(17, 24, 39, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Manrope", "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at 20% -10%, rgba(255, 183, 107, 0.3), transparent 50%),
+          radial-gradient(circle at 90% 0%, rgba(99, 102, 241, 0.12), transparent 45%),
+          linear-gradient(160deg, var(--bg), var(--bg-accent));
+        display: grid;
+        place-items: center;
+        padding: 32px;
+      }
+
+      .stage {
+        width: min(1100px, 100%);
+        background: var(--surface);
+        border-radius: 28px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        padding: 28px;
+        display: grid;
+        gap: 24px;
+      }
+
+      header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 24px;
+        flex-wrap: wrap;
+      }
+
+      .brand {
+        display: grid;
+        gap: 6px;
+      }
+
+      .title {
+        font-family: "Clash Display", "Bebas Neue", "Segoe UI", system-ui, sans-serif;
+        font-size: clamp(28px, 4vw, 48px);
+        letter-spacing: 1px;
+        margin: 0;
+      }
+
+      .subtitle {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: var(--muted);
+      }
+
+      .swatch {
+        width: 16px;
+        height: 16px;
+        border-radius: 5px;
+      }
+
+      .swatch.green {
+        background: rgba(46, 166, 106, 0.18);
+        border: 1px solid rgba(46, 166, 106, 0.7);
+      }
+
+      .swatch.yellow {
+        background: rgba(212, 165, 55, 0.2);
+        border: 1px solid rgba(212, 165, 55, 0.7);
+      }
+
+      .swatch.red {
+        background: rgba(213, 87, 79, 0.2);
+        border: 1px solid rgba(213, 87, 79, 0.7);
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(320px, 1.2fr) minmax(280px, 1fr);
+        gap: 22px;
+      }
+
+      .panel {
+        background: var(--surface-2);
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        padding: 20px;
+        display: grid;
+        gap: 16px;
+      }
+
+      .panel h2 {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .counter {
+        background: #eef2f8;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .progress {
+        height: 6px;
+        background: #e8edf5;
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--accent), #ffc08a);
+        transition: width 0.25s ease;
+      }
+
+      .board {
+        display: grid;
+        gap: 10px;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+
+      .tile {
+        height: 64px;
+        border-radius: 14px;
+        border: 1px solid #dfe5ef;
+        background: #ffffff;
+        display: grid;
+        place-items: center;
+        font-size: 22px;
+        font-weight: 600;
+        font-family: "IBM Plex Mono", "SF Mono", monospace;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .tile.empty {
+        color: #c4cad8;
+        background: #f8f9fb;
+      }
+
+      .tile.green {
+        border-color: rgba(46, 166, 106, 0.7);
+        background: rgba(46, 166, 106, 0.16);
+      }
+
+      .tile.yellow {
+        border-color: rgba(212, 165, 55, 0.7);
+        background: rgba(212, 165, 55, 0.18);
+      }
+
+      .tile.red {
+        border-color: rgba(213, 87, 79, 0.7);
+        background: rgba(213, 87, 79, 0.16);
+      }
+
+      .controls {
+        display: grid;
+        gap: 12px;
+      }
+
+      .hint {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .inputs {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+
+      .inputs input {
+        height: 60px;
+        border-radius: 14px;
+        border: 1px solid #dfe5ef;
+        background: #ffffff;
+        color: var(--text);
+        font-size: 22px;
+        text-align: center;
+        font-weight: 600;
+        transition: border 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .inputs input:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(255, 125, 58, 0.2);
+      }
+
+      .inputs.shake {
+        animation: shake 0.3s ease;
+      }
+
+      @keyframes shake {
+        0% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-6px);
+        }
+        50% {
+          transform: translateX(6px);
+        }
+        75% {
+          transform: translateX(-4px);
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      button {
+        border: none;
+        border-radius: 999px;
+        padding: 12px 18px;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .primary {
+        background: var(--accent);
+        color: #1b1208;
+        box-shadow: 0 8px 18px rgba(255, 125, 58, 0.3);
+      }
+
+      .primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 24px rgba(255, 125, 58, 0.35);
+      }
+
+      .ghost {
+        background: #ffffff;
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+
+      .status {
+        background: #ffffff;
+        border: 1px dashed #dce3ef;
+        padding: 10px 12px;
+        border-radius: 12px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .status[data-tone="error"] {
+        border-color: rgba(213, 87, 79, 0.4);
+        color: #a53933;
+        background: rgba(213, 87, 79, 0.08);
+      }
+
+      .status[data-tone="success"] {
+        border-color: rgba(46, 166, 106, 0.4);
+        color: #1b7a4b;
+        background: rgba(46, 166, 106, 0.08);
+      }
+
+      .demo {
+        background: #fff5ec;
+        border: 1px solid #ffd3b4;
+        border-radius: 16px;
+        padding: 14px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .demo strong {
+        font-size: 13px;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+      }
+
+      .secret {
+        font-family: "IBM Plex Mono", "SF Mono", monospace;
+        letter-spacing: 6px;
+        font-size: 18px;
+      }
+
+      @media (max-width: 900px) {
+        body {
+          padding: 20px;
+        }
+
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage">
+      <header>
+        <div class="brand">
+          <h1 class="title">Secret Combo</h1>
+          <p class="subtitle">Guess the 4-digit combo with wordle-style feedback.</p>
+        </div>
+        <div class="legend">
+          <span><i class="swatch green"></i>Right spot</span>
+          <span><i class="swatch yellow"></i>Wrong spot</span>
+          <span><i class="swatch red"></i>Not present</span>
+        </div>
+      </header>
+
+      <div class="layout">
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Attempts</h2>
+            <div class="counter" id="attemptCounter">0 / 8</div>
+          </div>
+          <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+          <div class="board" id="board"></div>
+        </section>
+
+        <section class="panel">
+          <h2>Enter your guess</h2>
+          <p class="hint">Digits 0-9. Repeats allowed. Press Enter to submit.</p>
+
+          <div class="controls">
+            <div class="inputs" id="inputs">
+              <input inputmode="numeric" maxlength="1" aria-label="Digit 1" />
+              <input inputmode="numeric" maxlength="1" aria-label="Digit 2" />
+              <input inputmode="numeric" maxlength="1" aria-label="Digit 3" />
+              <input inputmode="numeric" maxlength="1" aria-label="Digit 4" />
+            </div>
+
+            <div class="actions">
+              <button class="primary" id="guessBtn">Submit</button>
+              <button class="ghost" id="clearBtn">Clear</button>
+              <button class="ghost" id="resetBtn">New Secret</button>
+              <button class="ghost" id="revealBtn">Show Secret</button>
+            </div>
+
+            <div class="status" id="status" aria-live="polite"></div>
+          </div>
+
+          <div class="demo">
+            <strong>Demo Secret</strong>
+            <div class="secret" id="secretDisplay">• • • •</div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      const inputsWrap = document.getElementById('inputs');
+      const inputs = Array.from(inputsWrap.querySelectorAll('input'));
+      const board = document.getElementById('board');
+      const status = document.getElementById('status');
+      const secretDisplay = document.getElementById('secretDisplay');
+      const guessBtn = document.getElementById('guessBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const revealBtn = document.getElementById('revealBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const attemptCounter = document.getElementById('attemptCounter');
+      const progressBar = document.getElementById('progressBar');
+
+      const maxAttempts = 8;
+      let attempts = 0;
+      let reveal = false;
+      let secret = [];
+      let history = [];
+      let isGameOver = false;
+
+      const newSecret = () => {
+        secret = Array.from({ length: 4 }, () => Math.floor(Math.random() * 10));
+        attempts = 0;
+        history = [];
+        isGameOver = false;
+        reveal = false;
+        revealBtn.textContent = 'Show Secret';
+        inputs.forEach((input) => {
+          input.value = '';
+          input.disabled = false;
+        });
+        guessBtn.disabled = false;
+        clearBtn.disabled = false;
+        updateSecret();
+        updateStatus('Make your first guess.', '');
+        renderBoard();
+        inputs[0].focus();
+      };
+
+      const updateSecret = () => {
+        secretDisplay.textContent = reveal ? secret.join(' ') : '• • • •';
+      };
+
+      const updateStatus = (msg, tone) => {
+        status.textContent = msg;
+        if (tone) {
+          status.dataset.tone = tone;
+        } else {
+          delete status.dataset.tone;
+        }
+      };
+
+      const updateProgress = () => {
+        attemptCounter.textContent = `${attempts} / ${maxAttempts}`;
+        progressBar.style.width = `${(attempts / maxAttempts) * 100}%`;
+      };
+
+      const readGuess = () => {
+        const digits = inputs.map((input) => input.value.trim());
+        if (digits.some((d) => d === '' || isNaN(Number(d)))) {
+          return null;
+        }
+        return digits.map((d) => Number(d));
+      };
+
+      const evaluateGuess = (guess, secret) => {
+        const colors = Array(4).fill('red');
+        const usedSecret = Array(4).fill(false);
+        const isGreen = Array(4).fill(false);
+
+        for (let i = 0; i < 4; i += 1) {
+          if (guess[i] === secret[i]) {
+            colors[i] = 'green';
+            isGreen[i] = true;
+            usedSecret[i] = true;
+          }
+        }
+
+        for (let i = 0; i < 4; i += 1) {
+          if (isGreen[i]) continue;
+          let matched = false;
+          for (let j = 0; j < 4; j += 1) {
+            if (!usedSecret[j] && guess[i] === secret[j]) {
+              matched = true;
+              usedSecret[j] = true;
+              break;
+            }
+          }
+          if (matched) colors[i] = 'yellow';
+        }
+
+        return colors;
+      };
+
+      const renderBoard = () => {
+        board.innerHTML = '';
+        for (let i = 0; i < maxAttempts; i += 1) {
+          const row = document.createElement('div');
+          row.className = 'row';
+          const entry = history[i];
+          for (let j = 0; j < 4; j += 1) {
+            const tile = document.createElement('div');
+            if (entry) {
+              tile.className = `tile ${entry.colors[j]}`;
+              tile.textContent = entry.guess[j];
+            } else {
+              tile.className = 'tile empty';
+              tile.textContent = '';
+            }
+            row.appendChild(tile);
+          }
+          board.appendChild(row);
+        }
+        updateProgress();
+      };
+
+      const setGameOver = (message, tone) => {
+        isGameOver = true;
+        updateStatus(message, tone);
+        inputs.forEach((input) => (input.disabled = true));
+        guessBtn.disabled = true;
+        clearBtn.disabled = true;
+      };
+
+      const handleGuess = () => {
+        if (isGameOver) return;
+        const guess = readGuess();
+        if (!guess) {
+          updateStatus('Enter four digits (0-9).', 'error');
+          inputsWrap.classList.remove('shake');
+          void inputsWrap.offsetWidth;
+          inputsWrap.classList.add('shake');
+          return;
+        }
+
+        const colors = evaluateGuess(guess, secret);
+        history.push({ guess, colors });
+        attempts += 1;
+        renderBoard();
+
+        if (colors.every((c) => c === 'green')) {
+          setGameOver(`Solved in ${attempts} attempts.`, 'success');
+          return;
+        }
+
+        if (attempts >= maxAttempts) {
+          setGameOver(`Out of attempts. Secret was ${secret.join(' ')}.`, 'error');
+          return;
+        }
+
+        updateStatus(`${maxAttempts - attempts} attempts left.`, '');
+        inputs.forEach((input) => (input.value = ''));
+        inputs[0].focus();
+      };
+
+      const clearInputs = () => {
+        inputs.forEach((input) => (input.value = ''));
+        inputs[0].focus();
+      };
+
+      inputs.forEach((input, idx) => {
+        input.addEventListener('input', () => {
+          input.value = input.value.replace(/[^0-9]/g, '').slice(0, 1);
+          if (input.value && inputs[idx + 1]) {
+            inputs[idx + 1].focus();
+          }
+        });
+
+        input.addEventListener('keydown', (event) => {
+          if (event.key === 'Backspace' && !input.value && inputs[idx - 1]) {
+            inputs[idx - 1].focus();
+          }
+          if (event.key === 'ArrowLeft' && inputs[idx - 1]) {
+            inputs[idx - 1].focus();
+          }
+          if (event.key === 'ArrowRight' && inputs[idx + 1]) {
+            inputs[idx + 1].focus();
+          }
+        });
+
+        input.addEventListener('focus', () => input.select());
+      });
+
+      inputsWrap.addEventListener('paste', (event) => {
+        const text = event.clipboardData.getData('text');
+        const digits = text.replace(/\D/g, '').slice(0, 4).split('');
+        if (digits.length === 4) {
+          digits.forEach((digit, idx) => {
+            inputs[idx].value = digit;
+          });
+          inputs[3].focus();
+          event.preventDefault();
+        }
+      });
+
+      guessBtn.addEventListener('click', handleGuess);
+      resetBtn.addEventListener('click', newSecret);
+      clearBtn.addEventListener('click', clearInputs);
+      revealBtn.addEventListener('click', () => {
+        reveal = !reveal;
+        revealBtn.textContent = reveal ? 'Hide Secret' : 'Show Secret';
+        updateSecret();
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          handleGuess();
+        }
+      });
+
+      newSecret();
+    </script>
+  </body>
+</html>
